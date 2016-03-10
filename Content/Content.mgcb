@@ -32,3 +32,9 @@
 /processorParam:TextureFormat=DxtCompressed
 /build:Green_Cube.fbx
 
+#begin Effects/Test.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:Effects/Test.fx
+

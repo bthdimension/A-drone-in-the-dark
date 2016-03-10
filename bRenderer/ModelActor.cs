@@ -7,6 +7,8 @@ using System;
 */
 public class ModelActor : Actor
 {
+
+
     /* Constructors */
 
     /**	@brief Constructor loading standard values for position, orientation and projection
@@ -15,6 +17,12 @@ public class ModelActor : Actor
     public ModelActor(Model model) : base()
     {
         setModel(model);
+    }
+
+    public ModelActor(Model model,Effect effect) : base()
+    {
+        setModel(model);
+        _effect = effect;
     }
 
     /**	@brief Constructor 
@@ -29,6 +37,13 @@ public class ModelActor : Actor
         setModel(model);
     }
 
+    public ModelActor(Model model,Effect effect, Vector3 position, Vector3 rotationAxes, Vector3 scale)
+    : base(position, rotationAxes, scale)
+    {
+        setModel(model);
+        _effect = effect;
+    }
+
     /* Public functions */
 
     /**	@brief Draws the actor
@@ -38,11 +53,29 @@ public class ModelActor : Actor
     {
         foreach (ModelMesh mesh in _model.Meshes)
         {
-            foreach (BasicEffect effect in mesh.Effects)
+            if (_useShader)
             {
-                effect.World = getWorldMatrix();
-                effect.View = camera.getViewMatrix();
-                effect.Projection = camera.getProjectionMatrix();
+                
+                foreach (ModelMeshPart part in mesh.MeshParts)
+                    {
+                        part.Effect = _effect;
+                        _effect.Parameters["World"].SetValue(getWorldMatrix());
+                        _effect.Parameters["View"].SetValue(camera.getViewMatrix());
+                        _effect.Parameters["Projection"].SetValue(camera.getProjectionMatrix());
+                        _effect.Parameters["SpotAngle"].SetValue(_spotAngle);
+                        _effect.Parameters["SpotReach"].SetValue(_spotReach);
+                       // _effect.Parameters["CameraPosition"].SetValue(camera.getPosition());
+                    }
+              
+            }
+            else {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    //effect.EnableDefaultLighting();
+                    effect.World = getWorldMatrix();
+                    effect.View = camera.getViewMatrix();
+                    effect.Projection = camera.getProjectionMatrix();
+                }
             }
 
             mesh.Draw();
@@ -167,5 +200,9 @@ public class ModelActor : Actor
 
     private Model _model;
     private BoundingSphere _boundingSphere;
+    private Boolean _useShader = true;
+    private Effect _effect;
+    private float _spotReach=60;
+    private float _spotAngle = 40;
 
 }

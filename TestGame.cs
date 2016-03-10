@@ -12,6 +12,7 @@ public class TestGame : Game
 {
     GraphicsDeviceManager _graphics;
     SpriteBatch _spriteBatch;
+    
 
     CameraActor _camera;
 
@@ -53,8 +54,8 @@ public class TestGame : Game
     protected override void LoadContent()
     {
         // create a new SpriteBatch, which can be used to draw textures
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+        //_spriteBatch = new SpriteBatch(GraphicsDevice);
+        Effect effect = Content.Load<Effect>("Effects/Test");
         // create model actors
         Model cube = Content.Load<Model>("Green_Cube");
         for (int i = -10; i < 10; i++)
@@ -62,7 +63,7 @@ public class TestGame : Game
                 for (int k = -4; k < 4; k++)
                 {
                     if (i == 0 && j == 0 && k == 0) { } else
-                        _cubeActors.Add(new ModelActor(Content.Load<Model>("Green_Cube"), new Vector3(i * 30f, k * 30f, j * 30f), new Vector3(0f, 0f, 0f), new Vector3(0.3f, 0.3f, 0.3f)));
+                        _cubeActors.Add(new ModelActor(Content.Load<Model>("Green_Cube"),effect, new Vector3(i * 30f, k * 30f, j * 30f), new Vector3(0f, 0f, 0f), new Vector3(0.3f, 0.3f, 0.3f)));
                 }
     }
 
@@ -97,14 +98,17 @@ public class TestGame : Game
     /// <param name="gameTime">Provides a snapshot of timing values.</param>
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.DarkBlue);
+        GraphicsDevice.Clear(Color.Black);
+        //TODO activate depthtest?!? not really working but better as without it
+        GraphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
+        GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
         foreach (ModelActor actor in _cubeActors)
         {
             actor.draw(_camera);
         }
 
-        base.Draw(gameTime);
+       base.Draw(gameTime);
     }
 
     private void updateCamera(float deltaTime)
